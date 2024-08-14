@@ -32,10 +32,15 @@ namespace JobSearchManagementSystem.Application.Features.Command
             var vacancyEntity = _mapper.Map<Vacancy>(request);
             if (request.CompanyId is null)
             {
+                if(request.CompanyName is null)
+                {
+                    throw new ArgumentException("CompanyId or CompanyName is required");
+                }
                 vacancyEntity.Company = new Companies
                 {
                     Name = request.CompanyName
                 };
+
             }
 
             await _uow.VacanciesRepository.AddAsync(vacancyEntity);

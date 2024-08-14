@@ -24,7 +24,7 @@ namespace JobSearchManagementSystem.Persistance.EntityFrameworks.Repositories
             return await Table
                 .Include(x => x.Vacancy)
                 .Include(x => x.Company)
-                .Include(x => x.JobInformation)
+                .Include(x => x.JobInformation).ThenInclude(y=>y.JobDetailInformations)
                 .Include(x => x.Address)
                 .Include(x => x.Categories)
                 .Include(x => x.JobTypes)
@@ -38,17 +38,6 @@ namespace JobSearchManagementSystem.Persistance.EntityFrameworks.Repositories
             await SaveChanges();
         }
 
-        public async Task<VacancyDetail> GetByIdAsync(int id)
-        {
-            return await Table
-                .Include(x => x.Vacancy)
-                .Include(x => x.Company)
-                .Include(x => x.JobInformation)
-                .Include(x => x.Address)
-                .Include(x => x.Categories)
-                .Include(x => x.JobTypes)
-                .Include(x => x.Specialties)
-                .FirstOrDefaultAsync(x => x.Id == id);
-        }
+       
     }
 }

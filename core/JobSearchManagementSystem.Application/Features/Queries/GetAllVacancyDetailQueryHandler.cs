@@ -21,7 +21,7 @@ namespace JobSearchManagementSystem.Application.Features.Queries
 
         public async Task<IEnumerable<VacancyDetailViewDto>> Handle(GetAllVacancyDetailQuery request, CancellationToken cancellationToken)
         {
-            var vacancyDetails = await _uow.VacancyDetailRepository.GetAllAsync();
+            var vacancyDetails = await _uow.VacancyDetailRepository.GetAllVacancyDetails();
             return _mapper.Map<IEnumerable<VacancyDetailViewDto>>(vacancyDetails);
         }
     }

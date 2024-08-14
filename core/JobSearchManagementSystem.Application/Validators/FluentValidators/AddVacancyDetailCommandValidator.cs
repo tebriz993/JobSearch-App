@@ -12,14 +12,7 @@ namespace JobSearchManagementSystem.Application.Validators.FluentValidators
     {
         public AddVacancyDetailCommandValidator()
         {
-            RuleFor(x => x.Image)
-               .NotEmpty().WithMessage("Image cannot be empty");
-
-            RuleFor(x => x.VacancyId)
-                .NotEmpty().WithMessage("VacancyName cannot be empty");
-
-            RuleFor(x => x.CompanyId)
-                .NotEmpty().WithMessage("Company Name cannot be empty");
+            
 
             RuleFor(x => x.EndDate)
                .NotEmpty().WithMessage("EndDate cannot be empty");
@@ -27,23 +20,14 @@ namespace JobSearchManagementSystem.Application.Validators.FluentValidators
             RuleFor(x => x.AnnouncementNumber)
                 .NotEmpty().WithMessage("AnnouncementNumber cannot be empty");
 
-            RuleFor(x => x.JobInformationId)
-                .NotEmpty().WithMessage("JobInformationId Name cannot be empty");
-
-            RuleFor(x => x.AddressId)
-                .NotEmpty().WithMessage("Address Name cannot be empty");
-
+            
             RuleFor(x => x.MinExperience)
-                .NotEmpty().WithMessage("MinExperienceId Name cannot be empty");
+                .NotEmpty().WithMessage("MinExperienceId cannot be empty");
 
             RuleFor(x => x.MaxExperience)
-                .NotEmpty().WithMessage("MaxExperienceId Name cannot be empty");
+                .NotEmpty().WithMessage("MaxExperienceId cannot be empty");
 
-            RuleFor(x => x.CategoryId)
-                .NotEmpty().WithMessage("CategoryId Name cannot be empty");
-
-            RuleFor(x => x.JobTypesId)
-                .NotEmpty().WithMessage("JobTypesId Name cannot be empty");
+           
         }
     }
 }

@@ -25,12 +25,12 @@ namespace JobSearchManagementSystem.Application.Features.Command
         public async Task Handle(DeleteVacancyCommand request, CancellationToken cancellationToken)
         {
             await _validationRules.ThrowIfValidationFailAsync(request);
-            var vacancyDetailEntity = await _uow.VacanciesRepository.GetByIdAsync(request.Id);
-            if (vacancyDetailEntity == null)
+            var vacancyEntity = await _uow.VacanciesRepository.GetByIdAsync(request.Id);
+            if (vacancyEntity == null)
             {
                 throw new KeyNotFoundException("Vacancy detail not found");
             }
-            await _uow.VacanciesRepository.Remove(vacancyDetailEntity);
+            await _uow.VacanciesRepository.Remove(vacancyEntity);
             await _uow.Commit();
 
         }

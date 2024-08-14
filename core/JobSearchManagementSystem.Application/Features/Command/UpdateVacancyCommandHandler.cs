@@ -1,42 +1,72 @@
 ﻿using AutoMapper;
-using FluentValidation;
-using JobSearchManagementSystem.Application.Extensions;
-using JobSearchManagementSystem.Application.Interfaces;
-using JobSearchManagementSystem.Domain.Entities.Jobs;
+using JobSearchManagementSystem.Application.Features.Command;
+using JobSearchManagementSystem.Application.Interfaces.Commons;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
-namespace JobSearchManagementSystem.Application.Features.Command
+public class UpdateVacancyCommandHandler : IRequestHandler<UpdateVacancyCommand, bool>
 {
-    public class UpdateVacancyCommandHandler: IRequestHandler<UpdateVacancyCommand>
+    private readonly IVacanciesRepository _vacanciesRepository;
+    private readonly IMapper _mapper;
+
+    public UpdateVacancyCommandHandler(IVacanciesRepository vacanciesRepository, IMapper mapper)
     {
-        private readonly IUnitOfWork _uow;
-        private readonly IMapper _mapper;
-        private readonly AbstractValidator<UpdateVacancyCommand> _validationRules;
+        _vacanciesRepository = vacanciesRepository;
+        _mapper = mapper;
+    }
 
-        public UpdateVacancyCommandHandler(IUnitOfWork uow, IMapper mapper, AbstractValidator<UpdateVacancyCommand> validationRules)
+    public async Task<bool> Handle(UpdateVacancyCommand request, CancellationToken cancellationToken)
+    {
+        var vacancy = await _vacanciesRepository.GetByIdAsync(request.Id);
+
+        if (vacancy == null)
+            return false;
+            
+
+        vacancy.Name = request.Name ?? vacancy.Name;
+
+        // Handle file upload if Photo is provided
+        if (request.Photo != null)
         {
-            _uow = uow;
-            _mapper = mapper;
-            _validationRules = validationRules;
+            // Save the file and get the file path
+            var filePath = await SaveFileAsync(request.Photo);
+            vacancy.Image = filePath;
+        }
+        else
+        {
+            // Keep the existing image path if no new photo is provided
+            vacancy.Image = request.Image ?? vacancy.Image;
         }
 
-        public async Task Handle(UpdateVacancyCommand request, CancellationToken cancellationToken)
+        await _vacanciesRepository.Update(vacancy);
+        await _vacanciesRepository.SaveChanges();
+        return true;
+       
+    }
+
+    private async Task<string> SaveFileAsync(IFormFile file)
+    {
+        // Generate a GUID for the image file name
+        var filename = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+
+        // Define the relative path where the file will be saved
+        var relativePath = Path.Combine("assets", "img", filename);
+        var absolutePath = Path.Combine(Directory.GetCurrentDirectory(), relativePath);
+
+        // Ensure the directory exists
+        var uploadsFolder = Path.GetDirectoryName(absolutePath);
+        if (!Directory.Exists(uploadsFolder))
         {
-            await _validationRules.ThrowIfValidationFailAsync(request);
-
-            var vacancyDetailEntity = _mapper.Map<Vacancy>(request);
-            var editedVacancyDetail = await _uow.VacanciesRepository.GetByIdAsync(request.Id);
-
-            editedVacancyDetail.Image = request.Image;
-            editedVacancyDetail.Name = request.Name;
-            editedVacancyDetail.CompanyId = request.CompanyId;
-            await _uow.Commit();
-
+            Directory.CreateDirectory(uploadsFolder);
         }
+
+        // Save the file to the server
+        using (var stream = new FileStream(absolutePath, FileMode.Create))
+        {
+            await file.CopyToAsync(stream);
+        }
+
+        // Return the relative path of the saved file
+        return absolutePath;
     }
 }

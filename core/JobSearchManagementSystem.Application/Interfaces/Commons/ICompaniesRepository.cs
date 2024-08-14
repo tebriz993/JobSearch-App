@@ -9,5 +9,6 @@ namespace JobSearchManagementSystem.Application.Interfaces.Commons
 {
     public interface ICompaniesRepository:IRepository<Companies>
     {
+       
     }
 }

@@ -28,7 +28,7 @@ namespace JobSearchManagementSystem.Application.Features.Command
         {
             await _validationRules.ThrowIfValidationFailAsync(request);
             var categoriesEntity = await _uow.CategoriesRepository.GetByIdAsync(request.Id);
-            if (categoriesEntity == null)
+            if (categoriesEntity is null)
             {
                 throw new KeyNotFoundException("Category not found");
             }

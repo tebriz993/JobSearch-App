@@ -20,8 +20,7 @@ namespace JobSearchManagementSystem.Application.Validators.FluentValidators
                 .NotEmpty();
             RuleFor(x=>x.Name)
                 .NotEmpty();
-            RuleFor(x=>x.CompanyId)
-                .NotNull();
+            
         }
     }
 }

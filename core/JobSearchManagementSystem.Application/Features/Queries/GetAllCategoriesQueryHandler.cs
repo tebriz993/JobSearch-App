@@ -23,6 +23,7 @@ namespace JobSearchManagementSystem.Application.Features.Queries
 
         public async Task<IEnumerable<CategoryViewDto>> Handle(GetAllCategoriesQuery request, CancellationToken cancellationToken)
         {
+            
             var categories = await _uow.CategoriesRepository.GetAllAsync();
             return _mapper.Map<IEnumerable<CategoryViewDto>>(categories);
         }

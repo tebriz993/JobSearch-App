@@ -12,8 +12,8 @@ namespace JobSearchManagementSystem.Application.Validators.FluentValidators
     {
         public DeleteRoleCommandValidator()
         {
-            RuleFor(x=>x.Id)
-                .NotNull();
+            RuleFor(x => x.Id)
+                .NotNull().WithMessage("Id is not found");
         }
     }
 }

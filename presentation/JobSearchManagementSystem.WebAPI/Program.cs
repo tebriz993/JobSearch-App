@@ -1,22 +1,41 @@
 using JobSearchManagementSystem.Persistance;
 using JobSearchManagementSystem.Application;
-using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using Microsoft.OpenApi.Models;
-//using JobSearchManagementSystem.WebAPI.Middlewares;
+using JobSearchManagementSystem.Application.Validators.FluentValidators;
+using JobSearchManagementSystem.Application.Interfaces.Commons;
+using JobSearchManagementSystem.Persistance.EntityFrameworks.Repositories;
+using JobSearchManagementSystem.WebApi.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
+
+// Persistans v? Application xidm?tl?rini ?lav? etm?k.
 builder.Services.AddPersistanceServices(builder.Configuration);
-
 builder.Services.AddApplicationServices();
-builder.Services.AddControllers();
 
+//sonradan elave etdim
+builder.Services.AddScoped<ICompaniesRepository, EFCompaniesRepository>();
+builder.Services.AddScoped<ICategoriesRepository, EFCategoriesRepository>();
+builder.Services.AddScoped<IVacanciesRepository, EFVacanciesRepository>();
+builder.Services.AddScoped<IVacancyDetailRepository, EFVacancyDetailRepository>();
+
+    
+
+// FluentValidation-u ?lav? etm?k.
+builder.Services.AddControllers()
+    .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<CreateUserCommandValidator>())
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.IgnoreNullValues = true; // Optional
+    });
+
+// Swagger konfiqurasiyas?.
 builder.Services.AddSwaggerGen(options =>
 {
     var basicSecurityScheme = new OpenApiSecurityScheme
@@ -24,7 +43,10 @@ builder.Services.AddSwaggerGen(options =>
         Type = SecuritySchemeType.Http,
         Scheme = "bearer",
         Reference = new OpenApiReference
-        { Id = JwtBearerDefaults.AuthenticationScheme, Type = ReferenceType.SecurityScheme }
+        {
+            Id = JwtBearerDefaults.AuthenticationScheme,
+            Type = ReferenceType.SecurityScheme
+        }
     };
 
     options.AddSecurityDefinition(basicSecurityScheme.Reference.Id, basicSecurityScheme);
@@ -34,6 +56,7 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+// JWT do?rulama konfiqurasiyas?.
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -47,9 +70,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-
-//builder.Services.AddApplicationServices();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+// API Explorer v? Swagger/OpenAPI konfiqurasiyas?.
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -62,6 +83,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+
+app.UseMiddleware<ExceptionHandlerMiddleware>();
+app.UseAuthentication(); // JWT do?rulama üçün authentication-i istifad? etm?k.
 app.UseAuthorization();
 
 app.MapControllers();

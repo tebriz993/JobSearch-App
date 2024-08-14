@@ -28,7 +28,7 @@ namespace JobSearchManagementSystem.Application.Features.Command
         {
             await _validationRules.ThrowIfValidationFailAsync(request);
             var companiesEntity = await _uow.CompaniesRepository.GetByIdAsync(request.Id);
-            if (companiesEntity == null)
+            if (companiesEntity is null)
             {
                 throw new KeyNotFoundException("Company not found");
             }

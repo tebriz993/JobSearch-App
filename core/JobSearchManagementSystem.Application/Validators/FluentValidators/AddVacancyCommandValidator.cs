@@ -14,13 +14,12 @@ namespace JobSearchManagementSystem.Application.Validators.FluentValidators
         public AddVacancyCommandValidator()
         {
             RuleFor(x => x.Image)
-                .NotEmpty().WithMessage("Country cannot be empty");
+                .NotEmpty().WithMessage("Image cannot be empty");
 
             RuleFor(x => x.Name)
-                .NotEmpty().WithMessage("City cannot be empty");
+                .NotEmpty().WithMessage("Name cannot be empty");
 
-            RuleFor(x => x.CompanyId)
-                .NotEmpty().WithMessage("Address Name cannot be empty");
+            
         }
     }
 }

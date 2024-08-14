@@ -1,10 +1,7 @@
 ﻿using JobSearchManagementSystem.Application.Interfaces.Commons;
 using JobSearchManagementSystem.Domain.Entities.Jobs;
 using JobSearchManagementSystem.Persistance.EntityFrameworks.DbContexts;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 
 namespace JobSearchManagementSystem.Persistance.EntityFrameworks.Repositories
@@ -14,5 +11,7 @@ namespace JobSearchManagementSystem.Persistance.EntityFrameworks.Repositories
         public EFCompaniesRepository(JobSearchDbContext dbContext) : base(dbContext)
         {
         }
+
+        
     }
 }

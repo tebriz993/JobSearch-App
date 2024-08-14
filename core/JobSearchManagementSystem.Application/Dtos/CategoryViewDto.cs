@@ -13,7 +13,8 @@ namespace JobSearchManagementSystem.Application.Dtos
     public class CategoryViewDto:IMapTo<Categories>
     {
         public int Id { get; set; }
-        public string Image { get; set; }
+        public string ImagePath { get; set; }
+        public byte[] ImageData { get; set; }
         [NotMapped]
         public IFormFile Photo { get; set; }
         public string Name { get; set; }

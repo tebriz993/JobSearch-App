@@ -12,8 +12,7 @@ namespace JobSearchManagementSystem.Application.Validators.FluentValidators
     {
         public AddCategoriesCommandValidator()
         {
-            RuleFor(x => x.Image)
-                .NotNull();
+
             RuleFor(x => x.Name)
                 .NotNull();
         }

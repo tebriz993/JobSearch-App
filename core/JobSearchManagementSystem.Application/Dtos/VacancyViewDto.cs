@@ -11,8 +11,9 @@ namespace JobSearchManagementSystem.Application.Dtos
     public class VacancyViewDto:IMapTo<Vacancy>
     {
         public int Id { get; set; }
-        public string Image { get; set; }
+        public string ImagePath { get; set; }
+        public byte[] ImageData { get; set; }
         public string Name { get; set; }
-        public int CompanyId { get; set; }
+        public string CompanyName { get; set; }
     }
 }

@@ -11,8 +11,10 @@ namespace JobSearchManagementSystem.Application.Interfaces.Account
     {
         Task AddUser(User user);
 
-        void UpdateUser(User user);
+        Task UpdateUser(User user);
 
         Task<User?> GetUserWithDetail(string email);
+        Task<User?> GetByIdAsync(int userId);
+        Task<IEnumerable<User>> GetAllAsync();
     }
 }

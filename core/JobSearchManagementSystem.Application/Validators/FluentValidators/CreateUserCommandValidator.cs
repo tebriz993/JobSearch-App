@@ -14,21 +14,39 @@ namespace JobSearchManagementSystem.Application.Validators.FluentValidators
         public CreateUserCommandValidator()
         {
             RuleFor(x => x.Email)
-                     .NotEmpty()
-                     .CheckNull();
+                .NotEmpty()
+                .WithMessage("Email cannot be empty")
+                .EmailAddress()
+                .WithMessage("Email format is fault")
+                .CheckNull();
 
             RuleFor(x => x.FirstName)
-                     .NotEmpty()
-                     .CheckNull();
+                .NotEmpty()
+                .WithMessage("First name cannot be empty")
+                .MinimumLength(3)
+                .MaximumLength(50)
+                .CheckNull();
 
             RuleFor(x => x.LastName)
-                     .NotEmpty()
-                     .CheckNull();
-
+                .MinimumLength(3)
+                .MaximumLength(80)
+                .NotEmpty()
+                .WithMessage("Last name cannot be empty")
+                .CheckNull();
 
             RuleFor(x => x.Password)
-                     .NotEmpty()
-                     .CheckNull();
+                .NotEmpty()
+                .WithMessage("Password cannot be empty")
+                .CheckNull()
+                .MinimumLength(8)
+                .WithMessage("Password must be at least 8 characters long")
+                .Matches("[A-Z]")
+                .WithMessage("Password must contain at least one uppercase letter")
+                .Matches("[a-z]")
+                .WithMessage("Password must contain at least one lowercase letter")
+                .Matches("[0-9]")
+                .WithMessage("Password must contain at least one number");
+
         }
     }
 }

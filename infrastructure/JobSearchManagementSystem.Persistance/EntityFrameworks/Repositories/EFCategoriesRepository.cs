@@ -14,7 +14,10 @@ namespace JobSearchManagementSystem.Persistance.EntityFrameworks.Repositories
     {
         public EFCategoriesRepository(JobSearchDbContext dbContext) : base(dbContext)
         {
+
         }
+
+
         
     }
 }

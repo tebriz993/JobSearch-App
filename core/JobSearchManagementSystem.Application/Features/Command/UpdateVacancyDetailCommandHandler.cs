@@ -1,45 +1,72 @@
 ﻿using AutoMapper;
-using FluentValidation;
-using JobSearchManagementSystem.Application.Extensions;
-using JobSearchManagementSystem.Application.Interfaces;
-using JobSearchManagementSystem.Domain.Entities.Jobs;
+using JobSearchManagementSystem.Application.Features.Command;
+using JobSearchManagementSystem.Application.Interfaces.Commons;
 using MediatR;
-using System.Threading;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
-namespace JobSearchManagementSystem.Application.Features.Command
+public class UpdateVacancyDetailCommandHandler : IRequestHandler<UpdateVacancyCommand, bool>
 {
-    public class UpdateVacancyDetailCommandHandler : IRequestHandler<UpdateVacancyDetailCommand>
+    private readonly IVacancyDetailRepository _vacancyDetailRepository;
+    private readonly IMapper _mapper;
+
+    public UpdateVacancyDetailCommandHandler(IVacancyDetailRepository vacancyDetailRepository, IMapper mapper)
     {
-        private readonly IUnitOfWork _uow;
-        private readonly IMapper _mapper;
-        private readonly AbstractValidator<UpdateVacancyDetailCommand> _validationRules;
+        _vacancyDetailRepository = vacancyDetailRepository;
+        _mapper = mapper;
+    }
 
-        public UpdateVacancyDetailCommandHandler(IUnitOfWork uow, IMapper mapper, AbstractValidator<UpdateVacancyDetailCommand> validationRules)
+    public async Task<bool> Handle(UpdateVacancyCommand request, CancellationToken cancellationToken)
+    {
+        var vacancyDetail = await _vacancyDetailRepository.GetByIdAsync(request.Id);
+
+        if (vacancyDetail == null)
         {
-            _uow = uow;
-            _mapper = mapper;
-            _validationRules = validationRules;
+            throw new ArgumentException("Vacancy detail is null");
+        }
+            
+
+        // Handle file upload if Photo is provided
+        if (request.Photo != null)
+        {
+            // Save the file and get the file path
+            var filePath = await SaveFileAsync(request.Photo);
+            vacancyDetail.Image = filePath;
+        }
+        else
+        {
+            // Keep the existing image path if no new photo is provided
+            vacancyDetail.Image = request.Image ?? vacancyDetail.Image;
         }
 
-        public async Task Handle(UpdateVacancyDetailCommand request, CancellationToken cancellationToken)
+        await _vacancyDetailRepository.Update(vacancyDetail);
+        await _vacancyDetailRepository.SaveChanges();
+        return true;
+
+    }
+
+    private async Task<string> SaveFileAsync(IFormFile file)
+    {
+        // Generate a GUID for the image file name
+        var filename = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+
+        // Define the relative path where the file will be saved
+        var relativePath = Path.Combine("assets", "img", filename);
+        var absolutePath = Path.Combine(Directory.GetCurrentDirectory(), relativePath);
+
+        // Ensure the directory exists
+        var uploadsFolder = Path.GetDirectoryName(absolutePath);
+        if (!Directory.Exists(uploadsFolder))
         {
-            await _validationRules.ThrowIfValidationFailAsync(request);
-
-            var vacancyDetailEntity = _mapper.Map<VacancyDetail>(request);
-            var editedVacancyDetail = await _uow.VacancyDetailRepository.GetByIdAsync(request.Id);
-
-            editedVacancyDetail.Image = request.Image;
-            editedVacancyDetail.AnnouncementNumber = request.AnnouncementNumber;
-            editedVacancyDetail.VacancyId = request.VacancyId;
-            editedVacancyDetail.SpecialtiesId = request.SpecialtiesId;
-            editedVacancyDetail.MinExperience = request.MinExperience;
-            editedVacancyDetail.MaxExperience = request.MaxExperience;
-            editedVacancyDetail.CategoryId = request.CategoryId;
-            editedVacancyDetail.JobInformationId = request.JobInformationId;
-            editedVacancyDetail.CompanyId = request.CompanyId;
-            await _uow.Commit();
-
+            Directory.CreateDirectory(uploadsFolder);
         }
+
+        // Save the file to the server
+        using (var stream = new FileStream(absolutePath, FileMode.Create))
+        {
+            await file.CopyToAsync(stream);
+        }
+
+        // Return the relative path of the saved file
+        return absolutePath;
     }
 }

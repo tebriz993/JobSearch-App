@@ -28,9 +28,11 @@ namespace JobSearchManagementSystem.Application.Features.Command
         public async Task Handle(AddCompanyCommand request, CancellationToken cancellationToken)
         {
             await _validationRules.ThrowIfValidationFailAsync(request);
+
             var companyEntity = _mapper.Map<Companies>(request);
             await _uow.CompaniesRepository.AddAsync(companyEntity);
             await _uow.Commit();
         }
+        
     }
 }

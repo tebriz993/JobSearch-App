@@ -2,6 +2,7 @@
 using JobSearchManagementSystem.Domain.Entities.Account;
 using JobSearchManagementSystem.Persistance.EntityFrameworks.DbContexts;
 using Microsoft.EntityFrameworkCore;
+using System.Collections;
 using System.Threading.Tasks;
 
 namespace JobSearchManagementSystem.Persistance.EntityFrameworks.Repositories
@@ -39,6 +40,12 @@ namespace JobSearchManagementSystem.Persistance.EntityFrameworks.Repositories
         public async Task<Role> GetByIdAsync(int id)
         {
             return await _dbContext.Role.FindAsync(id);
+        }
+        public async Task<IEnumerable<UserRole>> GetUserRolesAsync(int userId)
+        {
+            return await _dbContext.UserRoles
+                .Where(ur => ur.UserId == userId)
+                .ToListAsync();
         }
     }
 }

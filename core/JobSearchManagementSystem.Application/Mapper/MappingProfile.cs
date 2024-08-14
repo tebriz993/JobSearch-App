@@ -13,6 +13,13 @@ namespace JobSearchManagementSystem.Application.Mapper
             //For User
             CreateMap<CreateUserCommand, User>();
             CreateMap<CreateUserCommand, UserDetail>();
+            CreateMap<User, UserViewDto>()
+            .ForMember(dest => dest.Roles, opt => opt.MapFrom(src => src.UserRoles.Select(ur => ur.Role.RoleName)))
+            .ForMember(dest => dest.UserDetail, opt => opt.MapFrom(src => src.UserDetail));
+
+            CreateMap<UserDetail, UserDetailViewDto>();
+
+
 
 
             CreateMap<AddAddressCommand, Address>();
@@ -43,7 +50,19 @@ namespace JobSearchManagementSystem.Application.Mapper
 
 
             CreateMap<Companies, CompanyViewDto>();
+            CreateMap<AddCompanyCommand, Companies>();
+            CreateMap<Companies, CompanyViewDto>()
+                .ForMember(dest => dest.ImagePath, opt => opt.MapFrom(src => src.Image));
 
+            CreateMap<Categories, CategoryViewDto>();
+            CreateMap<AddCategoryCommand, Categories>();
+            CreateMap<Categories, CategoryViewDto>()
+                .ForMember(dest => dest.ImagePath, opt => opt.MapFrom(src => src.Image));
+
+            CreateMap<Vacancy, VacancyViewDto>();
+            CreateMap<AddVacancyCommand, Vacancy>();
+            CreateMap<Vacancy, VacancyViewDto>()
+                .ForMember(dest => dest.ImagePath, opt => opt.MapFrom(src => src.Image));
 
         }
     }

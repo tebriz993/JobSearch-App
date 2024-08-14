@@ -13,7 +13,7 @@ namespace JobSearchManagementSystem.Application.Validators.FluentValidators
         public DeleteCategoryCommandValidator()
         {
             RuleFor(x => x.Id)
-                .NotNull();
+                .NotNull().WithMessage("Id is not found");
         }
     }
 }

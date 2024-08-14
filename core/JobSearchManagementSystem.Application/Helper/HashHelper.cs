@@ -28,9 +28,6 @@ namespace JobSearchManagementSystem.Application.Helper
                 return computedHash.SequenceEqual(passwordHash);
 
             }
-
-            //1235 -- > sdaskflkewvoerjv02930i41p4o
-
         }
     }
 }

@@ -2,20 +2,19 @@
 using JobSearchManagementSystem.Domain.Entities.Jobs;
 using MediatR;
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.Json.Serialization;
 
 namespace JobSearchManagementSystem.Application.Features.Command
 {
-    public class AddCategoryCommand:IMapTo<Categories>, IRequest
+    public class AddCategoryCommand : IMapTo<Categories>, IRequest
     {
+        [JsonIgnore]
         public string Image { get; set; }
+
         [NotMapped]
         public IFormFile Photo { get; set; }
+
         public string Name { get; set; }
     }
 }

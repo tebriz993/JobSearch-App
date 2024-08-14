@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace JobSearchManagementSystem.Application.Features.Command
 {
-    public class AddCategoryCommandHandler:IRequestHandler<AddCategoryCommand>
+    public class AddCategoryCommandHandler : IRequestHandler<AddCategoryCommand>
     {
         private readonly IUnitOfWork _uow;
         private readonly IMapper _mapper;
@@ -28,9 +28,10 @@ namespace JobSearchManagementSystem.Application.Features.Command
         public async Task Handle(AddCategoryCommand request, CancellationToken cancellationToken)
         {
             await _validationRules.ThrowIfValidationFailAsync(request);
-            var addressEntity = _mapper.Map<Categories>(request);
-            await _uow.CategoriesRepository.AddAsync(addressEntity);
+            var categoryEntity = _mapper.Map<Categories>(request);
+            await _uow.CategoriesRepository.AddAsync(categoryEntity);
             await _uow.Commit();
         }
+
     }
 }

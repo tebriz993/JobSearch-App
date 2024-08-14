@@ -2,10 +2,9 @@
 using JobSearchManagementSystem.Application.Dtos;
 using JobSearchManagementSystem.Application.Interfaces;
 using MediatR;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace JobSearchManagementSystem.Application.Features.Queries
@@ -23,7 +22,7 @@ namespace JobSearchManagementSystem.Application.Features.Queries
 
         public async Task<IEnumerable<VacancyViewDto>> Handle(GetAllVacancyQuery request, CancellationToken cancellationToken)
         {
-            var vacancies = await _uow.VacanciesRepository.GetAllAsync();
+            var vacancies = await _uow.VacanciesRepository.GetAllVacancies();
             return _mapper.Map<IEnumerable<VacancyViewDto>>(vacancies);
         }
     }

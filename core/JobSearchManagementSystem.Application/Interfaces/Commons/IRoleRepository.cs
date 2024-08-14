@@ -11,5 +11,6 @@ namespace JobSearchManagementSystem.Application.Interfaces.Commons
         Task DeleteAsync(Role role);
         Task<IEnumerable<Role>> GetAllAsync();
         Task<Role> GetByIdAsync(int ıd);
+        Task<IEnumerable<UserRole>> GetUserRolesAsync(int userId);
     }
 }

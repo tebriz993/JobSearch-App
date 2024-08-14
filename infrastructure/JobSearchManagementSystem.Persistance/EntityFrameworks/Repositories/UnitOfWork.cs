@@ -53,8 +53,12 @@ namespace JobSearchManagementSystem.Persistance.EntityFrameworks.Repositories
         public IRoleRepository RoleRepository => SetRepository<IRoleRepository>();
 
 
+        public async Task CommitTransaction()
+        {
+            await _dbcontext.Database.CommitTransactionAsync();
+        }
 
-        public async Task Commit()
+        public async Task Commit(CancellationToken cancellationToken = default)
         {
 
             var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -62,7 +66,7 @@ namespace JobSearchManagementSystem.Persistance.EntityFrameworks.Repositories
             IEnumerable<EntityEntry<BaseEntity>> entities = _dbcontext
               .ChangeTracker
               .Entries<BaseEntity>()
-              .ToList() ;
+              .ToList();
 
             foreach (var entry in entities)
             {
@@ -78,8 +82,9 @@ namespace JobSearchManagementSystem.Persistance.EntityFrameworks.Repositories
                 }
             }
 
-            await _dbcontext.SaveChangesAsync();
-            await _dbcontext.Database.CommitTransactionAsync();
+            await _dbcontext.SaveChangesAsync(cancellationToken);
+            await CommitTransaction();
+
         }
 
         public TRepository GetReposiroty<TRepository>() where TRepository : class

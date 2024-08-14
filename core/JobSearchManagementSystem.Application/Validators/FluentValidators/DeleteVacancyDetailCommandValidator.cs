@@ -8,8 +8,7 @@ namespace JobSearchManagementSystem.Application.Validators.FluentValidators
         public DeleteVacancyDetailCommandValidator()
         {
             RuleFor(x => x.Id)
-                .NotNull()
-                .GreaterThan(0);
+                .NotNull().WithMessage("Id is not found");
         }
     }
 }

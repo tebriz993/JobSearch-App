@@ -1,44 +1,50 @@
-﻿using JobSearchManagementSystem.Application.Exception;
-using System;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Text.Json;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using JobSearchManagementSystem.Application.Exception;
 using JobSearchManagementSystem.WebAPI;
+
 namespace JobSearchManagementSystem.WebApi.Middlewares
 {
-    public class ExceptionHandlerMiddleWare
+    public class ExceptionHandlerMiddleware
     {
         private const string AppJsonContentType = "application/json";
         private readonly RequestDelegate _next;
-        public ExceptionHandlerMiddleWare(RequestDelegate next)
+
+        public ExceptionHandlerMiddleware(RequestDelegate next)
         {
             _next = next;
         }
+
         public async Task InvokeAsync(HttpContext context)
         {
             try
             {
                 await _next(context);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                List<string> messages = new List<string>();
-                var httpStatusCode = HttpStatusCode.BadRequest;
+                // Log the exception
+                // _logger.LogError(ex, "Unhandled exception");
 
-                switch (e)
+                List<string> messages = new List<string>();
+                var httpStatusCode = HttpStatusCode.InternalServerError; // Default to 500
+
+                switch (ex)
                 {
-                    case ArgumentException argumentException:
-                        httpStatusCode = HttpStatusCode.InternalServerError;
-                        messages.Add($"Bu middleware ile yazilan exception mesajdir {argumentException.Message}");
-                        break;
                     case JobSearchValidationException validationException:
                         httpStatusCode = HttpStatusCode.BadRequest;
-                        messages.AddRange(validationException.ValidationFailures.Select(x => $"{x.PropertyName} - {x.ErrorMessage}"));
+                        messages.AddRange(validationException.ValidationFailures
+                            .Select(x => $"{x.PropertyName} - {x.ErrorMessage}"));
                         break;
                     default:
-                        messages.Add(e.Message);
+                        messages.Add(ex.Message);
                         break;
                 }
-
 
                 var responseModel = new ApiResponseModel<string>
                 {
@@ -47,7 +53,7 @@ namespace JobSearchManagementSystem.WebApi.Middlewares
                     Result = null
                 };
 
-                var responseAsJson = JsonSerializer.Serialize(responseModel); // responseModel : {"statusCode":200 }
+                var responseAsJson = JsonSerializer.Serialize(responseModel);
 
                 context.Response.StatusCode = (int)httpStatusCode;
                 context.Response.ContentType = AppJsonContentType;

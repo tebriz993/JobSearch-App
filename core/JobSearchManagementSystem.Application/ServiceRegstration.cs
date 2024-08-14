@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FluentValidation;
 using JobSearchManagementSystem.Application.Features.Command;
+using JobSearchManagementSystem.Application.Interfaces.Commons;
 using JobSearchManagementSystem.Application.Validators.FluentValidators;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,14 +13,14 @@ namespace JobSearchManagementSystem.Application
     {
         public static void AddApplicationServices(this IServiceCollection services)
         {
-            services.AddMediatR(x => x.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly()));
-            services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
 
             services.AddScoped(typeof(AbstractValidator<AddAddressCommand>), typeof(AddAddressCommandValidator));
+
             //For User
             services.AddScoped(typeof(AbstractValidator<CreateUserCommand>), typeof(CreateUserCommandValidator));
-           
+            services.AddScoped(typeof(AbstractValidator<UpdateUserCommand>), typeof(UpdateUserCommandValidator));
+
 
             //For Role
             services.AddScoped(typeof(AbstractValidator<AddRoleCommand>), typeof(AddRoleCommandValidator));
@@ -38,12 +39,17 @@ namespace JobSearchManagementSystem.Application
 
             //For Category
             services.AddScoped(typeof(AbstractValidator<AddCategoryCommand>), typeof(AddCategoriesCommandValidator));
+            services.AddScoped(typeof(AbstractValidator<UpdateCategoryCommand>), typeof(UpdateCategoryCommandValidator));
             services.AddScoped(typeof(AbstractValidator<DeleteCategoryCommand>), typeof(DeleteCategoryCommandValidator));
 
             //For Company
             services.AddScoped(typeof(AbstractValidator<AddCompanyCommand>), typeof(AddCompanyCommandValidator));
+            services.AddScoped(typeof(AbstractValidator<UpdateCompanyCommand>), typeof(UpdateCompanyCommandValidator));
             services.AddScoped(typeof(AbstractValidator<DeleteCompanyCommand>), typeof(DeleteCompanyCommandValidator));
 
+
+            services.AddMediatR(x => x.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly()));
+            services.AddAutoMapper(Assembly.GetExecutingAssembly());
         }
     }
 }

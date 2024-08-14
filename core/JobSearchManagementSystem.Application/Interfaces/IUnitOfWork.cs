@@ -10,10 +10,11 @@ namespace JobSearchManagementSystem.Application.Interfaces
 {
     public interface IUnitOfWork
     {
-        Task Commit();
+        Task Commit(CancellationToken cancellationToken =default);
         void Rollback();
         TRepository SetRepository<TRepository>();
         TRepository GetReposiroty<TRepository>() where TRepository : class;
+        Task CommitTransaction();
 
         IAddressRepository AddressRepository { get; }
         ICategoriesRepository CategoriesRepository { get; }
