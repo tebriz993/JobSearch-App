@@ -1,21 +1,23 @@
-# 1. Base image
+# 1. Runtime üçün ASP.NET image (son mərhələ üçün)
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
 EXPOSE 80
 ENV ASPNETCORE_URLS=http://+:80
 
-# 2. Build image
+# 2. Build mərhələsi üçün SDK image
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Faylları konteynerə kopyala
+# Layihənin bütün mənbə kodlarını konteynerə kopyala
 COPY . .
 
-# Sadəcə .csproj faylının olduğu yerə keç
+# WebAPI layihəsinin qovluğuna keç
 WORKDIR /src/presentation/JobSearchManagementSystem.WebAPI
 
-# Restore və build
+# .csproj faylını explicit göstər və bərpa et
 RUN dotnet restore JobSearchManagementSystem.WebAPI.csproj
+
+# Layihəni yayımla
 RUN dotnet publish JobSearchManagementSystem.WebAPI.csproj -c Release -o /app/publish
 
 # 3. Final image
