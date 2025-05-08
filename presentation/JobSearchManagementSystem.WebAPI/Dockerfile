@@ -1,26 +1,26 @@
-# 1. Runtime üçün ASP.NET image (son mərhələ üçün)
+# 1. ASP.NET Core runtime - final stage
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
 EXPOSE 80
 ENV ASPNETCORE_URLS=http://+:80
 
-# 2. Build mərhələsi üçün SDK image
+# 2. SDK image for build stage
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Layihənin bütün mənbə kodlarını konteynerə kopyala
+# Layihənin bütün fayllarını konteynerə kopyala
 COPY . .
 
 # WebAPI layihəsinin qovluğuna keç
 WORKDIR /src/presentation/JobSearchManagementSystem.WebAPI
 
-# .csproj faylını explicit göstər və bərpa et
+# Restore: bütün layihə asılılıqları
 RUN dotnet restore JobSearchManagementSystem.WebAPI.csproj
 
-# Layihəni yayımla
+# Publish: yayıma hazırla
 RUN dotnet publish JobSearchManagementSystem.WebAPI.csproj -c Release -o /app/publish
 
-# 3. Final image
+# 3. Final image - sadəcə işləmək üçün lazım olanlar
 FROM base AS final
 WORKDIR /app
 COPY --from=build /app/publish .
