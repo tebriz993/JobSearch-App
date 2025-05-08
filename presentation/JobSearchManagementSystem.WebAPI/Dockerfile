@@ -1,27 +1,19 @@
-# 1. ASP.NET Core runtime - final stage
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-WORKDIR /app
-EXPOSE 80
-ENV ASPNETCORE_URLS=http://+:80
-
-# 2. SDK image for build stage
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Layihənin bütün fayllarını konteynerə kopyala
+# .csproj-ı düzgün path-dən kopyala
+COPY ["src/Presentation/JobSearch.WebAPI/JobSearch.WebAPI.csproj", "src/Presentation/JobSearch.WebAPI/"]
+RUN dotnet restore "src/Presentation/JobSearch.WebAPI/JobSearch.WebAPI.csproj" # ← Düzəliş!
+
+# Sonra bütün faylları kopyala
 COPY . .
+WORKDIR "/src/src/Presentation/JobSearch.WebAPI"
+RUN dotnet build "JobSearch.WebAPI.csproj" -c Release -o /app/build
 
-# WebAPI layihəsinin qovluğuna keç
-WORKDIR /src/presentation/JobSearchManagementSystem.WebAPI
+FROM build AS publish
+RUN dotnet publish "JobSearch.WebAPI.csproj" -c Release -o /app/publish
 
-# Restore: bütün layihə asılılıqları
-RUN dotnet restore JobSearchManagementSystem.WebAPI.csproj
-
-# Publish: yayıma hazırla
-RUN dotnet publish JobSearchManagementSystem.WebAPI.csproj -c Release -o /app/publish
-
-# 3. Final image - sadəcə işləmək üçün lazım olanlar
-FROM base AS final
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
-COPY --from=build /app/publish .
-ENTRYPOINT ["dotnet", "JobSearchManagementSystem.WebAPI.dll"]
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "JobSearch.WebAPI.dll"] # DLL adı da dəyişdi!
