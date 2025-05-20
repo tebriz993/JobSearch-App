@@ -2,27 +2,25 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Yalnız .sln və .csproj fayllarını kopyala (restore üçün)
+# Repository kökündən faylları kopyala
 COPY JobSearch.sln .
 COPY src/Presentation/JobSearch.WebAPI/JobSearch.WebAPI.csproj ./src/Presentation/JobSearch.WebAPI/
 COPY src/Core/JobSearch.Application/JobSearch.Application.csproj ./src/Core/JobSearch.Application/
 COPY src/Core/JobSearch.Domain/JobSearch.Domain.csproj ./src/Core/JobSearch.Domain/
 COPY src/Infrastructure/JobSearch.Infrastructure/JobSearch.Infrastructure.csproj ./src/Infrastructure/JobSearch.Infrastructure/
 COPY src/Infrastructure/JobSearch.Persistence/JobSearch.Persistence.csproj ./src/Infrastructure/JobSearch.Persistence/
-# Əgər NuGet.config faylınız varsa, onu da kopyalayın
-# COPY NuGet.config .
 
 # Asılılıqları bərpa et
 RUN dotnet restore "JobSearch.sln"
 
-# Bütün source kodu kopyala (artıq restore edilib)
-# 'src' qovluğundakı bütün məzmunu /src/src altına kopyalayacaq
+# Qalan source kodu kopyala
+# Bu, <repo_root>/src/ qovluğunun məzmununu Docker image-də /src/src/ altına kopyalayacaq
 COPY src/ ./src/
-# Əgər presentation qovluğunda da kod varsa və lazımdırsa:
+# Əgər <repo_root>/presentation/ qovluğundan da nəsə lazımdırsa (məsələn, Dockerfile-dan başqa):
 # COPY presentation/ ./presentation/
 
 # Publish et
-# Publish üçün .csproj faylının WORKDIR (/src) içindəki düzgün yolunu göstərin
+# .csproj faylının WORKDIR (/src) daxilindəki düzgün yolu: src/Presentation/JobSearch.WebAPI/JobSearch.WebAPI.csproj
 RUN dotnet publish "src/Presentation/JobSearch.WebAPI/JobSearch.WebAPI.csproj" -c Release -o /app/publish --no-restore
 
 # Stage 2: Runtime
